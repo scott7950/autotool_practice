@@ -1,0 +1,51 @@
+package = @PACKAGE_NAME@
+version = @PACKAGE_VERSION@
+tarname = @PACKAGE_TARNAME@
+distdir = $(tarname)-$(version)
+
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+bindir = @bindir@
+
+srcdir = @srcdir@
+VPATH  = @srcdir@
+
+all clean check install uninstall jupiter:
+	$(MAKE) -C src $@
+
+dist: $(distdir).tar.gz
+
+$(distdir).tar.gz: FORCE $(distdir)
+	tar chof - $(distdir) |\
+		gzip -9 -c > $(distdir).tar.gz
+	rm -rf $(distdir)
+
+$(distdir):
+	-rm -rf $(distdir) &> /dev/null
+	mkdir -p $(distdir)/src
+	cp $(srcdir)/configure $(distdir)
+	cp $(srcdir)/Makefile.in $(distdir)
+	cp $(srcdir)/src/Makefile.in $(distdir)/src
+	cp $(srcdir)/src/main.c $(distdir)/src
+
+distcheck: $(distdir).tar.gz
+	gzip -cd $+ | tar xvf -
+	cd $(distdir); ./configure
+	$(MAKE) -C $(distdir) all check clean
+	rm -rf $(distdir)
+	@echo "** Package $(distdir).tar.gz\
+		ready for distribution."
+
+Makefile: Makefile.in config.status
+	./config.status $@
+
+config.status: configure
+	./config.status --recheck
+
+FORCE:
+	-rm $(distdir).tar.gz &> /dev/null
+	-rm -rf $(distdir) &> /dev/null
+
+.PHONY: FORCE all clean check dist distcheck
+.PHONY: install uninstall
+
