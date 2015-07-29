@@ -1,0 +1,5 @@
+[scott@localhost ./autoscan_autoconf1]$ autoscan
+[scott@localhost ./autoscan_autoconf1]$ gvimdiff configure.scan configure.ac
+[scott@localhost ./autoscan_autoconf1]$ autoreconf
+[scott@localhost ./autoscan_autoconf1]$ ./configure
+[scott@localhost ./autoscan_autoconf1]$ make
